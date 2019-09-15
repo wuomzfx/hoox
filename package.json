@@ -1,0 +1,70 @@
+{
+  "name": "hooxjs",
+  "version": "0.1.0",
+  "description": "Functional react state management base on hooks",
+  "author": "wuomzfx <75851654@qq.com>",
+  "license": "MIT",
+  "module": "dist/index.esm.js",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "test": "jest",
+    "cov": "jest --coverage",
+    "lint": "eslint 'src/**/*.*'",
+    "build": "tsc && npm run rollup",
+    "rollup": "rollup -c rollup.config.js",
+    "prebuild": "rm -rf dist && rm -rf types && npm run ci",
+    "ci": "npm run lint && npm run test",
+    "prepublishOnly": "npm run build",
+    "pub-beta": "npm publish --tag=beta"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/wuomzfx/hoox.git"
+  },
+  "keywords": [
+    "hooks",
+    "react",
+    "state",
+    "store"
+  ],
+  "peerDependencies": {
+    "@babel/runtime": "^7.4.4",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "@testing-library/react": "^8.0.7",
+    "@testing-library/react-hooks": "^1.1.0",
+    "@types/jest": "^24.0.15",
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5",
+    "@typescript-eslint/eslint-plugin": "^2.2.0",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-typescript": "^4.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^2.0.1",
+    "jest": "^24.8.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-test-renderer": "^16.9.0",
+    "rollup": "^1.12.2",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
+  },
+  "bugs": {
+    "url": "https://github.com/wuomzfx/hoox/issues"
+  },
+  "homepage": "https://github.com/wuomzfx/hoox#readme",
+  "directories": {
+    "test": "test"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "extends": "airbnb-typescript",
+  "plugins": [
+    "react-hooks"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": 0,
+    "react/destructuring-assignment": 0,
+    "no-plusplus": 0,
+    "jest/valid-expect": 0,
+    "class-methods-use-this": 0,
+    "import/prefer-default-export": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "jsx-a11y/click-events-have-key-events": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "import/no-duplicates": 0
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}

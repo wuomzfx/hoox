@@ -1,0 +1,6 @@
+node_modules
+dist
+.rpt2_cache
+types
+coverage
+package-lock.json
