@@ -17,14 +17,36 @@ export interface ProviderProps<State> {
   children: ReactNode
 }
 
-export default function hoox<State>(state: State) {
+export type Dispatcher<State> = Dispatch<SetStateAction<State>>;
+export type StateOperator<State> = [State, Dispatcher<State>, Dispatcher<State>];
+
+export interface Hoox<State> {
+  Provider: (props: ProviderProps<State>) => JSX.Element
+  useHooxState: () => StateOperator<State>
+  getHooxState: () => StateOperator<State>
+  getSetState: () => Dispatcher<State>
+  getResetState: () => Dispatcher<State>
+  setHooxState: Dispatcher<State>
+  resetHooxState: Dispatcher<State>
+  createContainer: (
+    Component: React.FunctionComponent<{}>,
+    initialState?: State
+  ) => <Props = {}>(props: Props) => JSX.Element
+}
+
+export default function hoox<State>(state: State): Hoox<State> {
   if (!isPlainObject(state)) {
     throw new Error('state is not plain object');
   }
+
+  const result: {
+    [key: string]: any
+  } = {};
+
   const StateContext = createContext({} as any);
   let stateRef: State;
-  let setHooxState: Dispatch<SetStateAction<State>>;
-  let resetHooxState: Dispatch<SetStateAction<State>>;
+  let setHooxState: Dispatcher<State>;
+  let resetHooxState: Dispatcher<State>;
 
   function Provider({ initialState, children }: ProviderProps<State>) {
     const [hooxState, setState] = useState(() => {
@@ -61,6 +83,9 @@ export default function hoox<State>(state: State) {
       };
 
       resetHooxState = setState;
+
+      result.resetHooxState = setState;
+      result.setHooxState = setHooxState;
     }, []);
 
     return (
@@ -80,12 +105,12 @@ export default function hoox<State>(state: State) {
     };
   }
 
-  function useHooxState(): [State, typeof setHooxState, typeof resetHooxState] {
+  function useHooxState(): StateOperator<State> {
     const hooxState = useContext(StateContext);
     return [hooxState, setHooxState, resetHooxState];
   }
 
-  function getHooxState(): [State, typeof setHooxState, typeof resetHooxState] {
+  function getHooxState(): StateOperator<State> {
     return [stateRef, setHooxState, resetHooxState];
   }
 
@@ -97,12 +122,12 @@ export default function hoox<State>(state: State) {
     return setHooxState;
   }
 
-  return {
-    Provider,
-    useHooxState,
-    getHooxState,
-    getSetState,
-    getResetState,
-    createContainer,
-  };
+  result.Provider = Provider;
+  result.getResetState = getResetState;
+  result.getSetState = getSetState;
+  result.getHooxState = getHooxState;
+  result.useHooxState = useHooxState;
+  result.createContainer = createContainer;
+
+  return result as Hoox<State>;
 }
