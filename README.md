@@ -4,7 +4,9 @@
 
 ### install
 
-`npm install hooxjs -S`
+```javascript
+npm install hooxjs -S
+```
 
 ### create some store
 
@@ -72,7 +74,8 @@ export const {
   Provider,
   getHooxState,
   useHooxState,
-  getResetState,
+  setHooxState,
+  resetHooxState,
   createContainer
 } = hoox(state)
 ```
@@ -129,7 +132,17 @@ export const up = () => {
 it behaves like `setState` of class Components, but no callback
 
 ```javascript
-// update State
+// get setHooxState from hoox(state)
+const { setHooxState } = hoox({ count: 0 })
+export const updateCount = newCount => {
+  return setHooxState({
+    count: newCount
+  })
+}
+```
+
+```javascript
+// get setHooxState from getHooxState()
 export const updateWithRecordOld = newCount => {
   const [oldState, setHooxState] = getHooxState()
   return setHooxState({
@@ -137,7 +150,9 @@ export const updateWithRecordOld = newCount => {
     oldCount: oldState.count
   })
 }
+```
 
+```javascript
 // aonther way to use oldState
 export const up = (key, value) => {
   const [, setHooxState] = getHooxState()
@@ -152,17 +167,17 @@ export const up = (key, value) => {
 it behaves like `setState` of `useState` hook
 
 ```javascript
-// get resetHooxState from getHooxState or useHooxState
+// get resetHooxState from hoox(state)
+const { resetHooxState } = hoox({ count: 0 })
 export const reset = (key, value) => {
-  const [, , resetHooxState] = getHooxState()
   return resetHooxState({ count: 0 })
 }
 ```
 
 ```javascript
-// get resetHooxState from getResetState
+// get resetHooxState from getHooxState() or useHooxState()
 export const reset = (key, value) => {
-  const resetHooxState = getResetState()
+  const [, , resetHooxState] = getHooxState()
   return resetHooxState({ count: 0 })
 }
 ```

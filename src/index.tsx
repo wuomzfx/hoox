@@ -24,8 +24,6 @@ export interface Hoox<State> {
   Provider: (props: ProviderProps<State>) => JSX.Element
   useHooxState: () => StateOperator<State>
   getHooxState: () => StateOperator<State>
-  getSetState: () => Dispatcher<State>
-  getResetState: () => Dispatcher<State>
   setHooxState: Dispatcher<State>
   resetHooxState: Dispatcher<State>
   createContainer: (
@@ -38,10 +36,6 @@ export default function hoox<State>(state: State): Hoox<State> {
   if (!isPlainObject(state)) {
     throw new Error('state is not plain object');
   }
-
-  const result: {
-    [key: string]: any
-  } = {};
 
   const StateContext = createContext({} as any);
   let stateRef: State;
@@ -83,9 +77,6 @@ export default function hoox<State>(state: State): Hoox<State> {
       };
 
       resetHooxState = setState;
-
-      result.resetHooxState = setState;
-      result.setHooxState = setHooxState;
     }, []);
 
     return (
@@ -122,12 +113,12 @@ export default function hoox<State>(state: State): Hoox<State> {
     return setHooxState;
   }
 
-  result.Provider = Provider;
-  result.getResetState = getResetState;
-  result.getSetState = getSetState;
-  result.getHooxState = getHooxState;
-  result.useHooxState = useHooxState;
-  result.createContainer = createContainer;
-
-  return result as Hoox<State>;
+  return {
+    Provider,
+    getHooxState,
+    setHooxState: (newState: SetStateAction<State>) => getSetState()(newState),
+    resetHooxState: (newState: SetStateAction<State>) => getResetState()(newState),
+    useHooxState,
+    createContainer,
+  };
 }

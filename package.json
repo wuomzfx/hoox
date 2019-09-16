@@ -1,6 +1,6 @@
 {
   "name": "hooxjs",
-  "version": "0.1.1-beta.0",
+  "version": "0.1.1",
   "description": "Functional react state management base on hooks",
   "author": "wuomzfx <75851654@qq.com>",
   "license": "MIT",

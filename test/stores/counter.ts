@@ -11,8 +11,8 @@ const state = {
 export const {
   getHooxState,
   useHooxState,
-  getSetState,
-  getResetState,
+  setHooxState,
+  resetHooxState,
   createContainer,
   Provider,
 } = hoox(state);

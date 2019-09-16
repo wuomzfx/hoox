@@ -7,8 +7,8 @@ import {
   up,
   asyncUp,
   Provider,
-  getSetState,
-  getResetState,
+  setHooxState,
+  resetHooxState,
   useHooxState,
   useDoubleCount,
   createContainer,
@@ -23,8 +23,6 @@ function Child() {
 
 function Counter() {
   const [hooxState, setState, resetState] = useHooxState();
-  const setHooxState = getSetState();
-  const resetHooxState = getResetState();
 
   return (
     <div>
