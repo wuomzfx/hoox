@@ -1,4 +1,4 @@
-# hook-store
+# Hoox
 
 ## Use
 
@@ -12,25 +12,25 @@ npm install hooxjs -S
 
 ```javascript
 // counterStore.js
-import hoox from 'hooxjs'
+import createHoox from 'hooxjs'
 
 const state = {
   count: 1
 }
 
-export const { getHooxState, useHooxState, createContainer } = hoox(state)
+export const { getHoox, useHoox, createContainer } = createHoox(state)
 
 // some action
 export const up = () => {
-  const [hooxState, setHooxState] = getHooxState()
-  return setHooxState({
+  const [hooxState, setHoox] = getHoox()
+  return setHoox({
     count: hooxState.count + 1
   })
 }
 
 // some computed state
 export const useDoubleCount = () => {
-  const [hooxState] = useHooxState()
+  const [hooxState] = useHoox()
   return hooxState.count * 2
 }
 ```
@@ -40,7 +40,7 @@ export const useDoubleCount = () => {
 ```javascript
 import React from 'react'
 import ReactDom from 'react-dom'
-import { useHooxState, useDoubleCount, up } from './counterStore'
+import { useHoox, useDoubleCount, up } from './counterStore'
 
 function Child() {
   const doubleCount = useDoubleCount()
@@ -48,7 +48,7 @@ function Child() {
 }
 
 function Counter() {
-  const [hooxState] = useHooxState()
+  const [hooxState] = useHoox()
   return (
     <div>
       <div>{hooxState.count}</div>
@@ -65,19 +65,21 @@ ReactDom.render(<Container />, document.getElementById('#root'))
 
 ## API
 
-### hoox(state)
+### createHoox
 
 ```javascript
+import createHoox from 'hooxjs'
+
 const state = { count: 0 }
 
 export const {
   Provider,
-  getHooxState,
-  useHooxState,
-  setHooxState,
-  resetHooxState,
+  getHoox,
+  useHoox,
+  setHoox,
+  resetHoox,
   createContainer
-} = hoox(state)
+} = createHoox(state)
 ```
 
 ### Provider
@@ -102,50 +104,50 @@ hooxState will combine the initialState of createContainer args[1]
 const App = createContainer(YourFunctionComponent, { count: 2 })
 ```
 
-### useHooxState
+### useHoox
 
 using this api, build your hook
 
 ```javascript
 export const useDoubleCount = () => {
-  const [hooxState, setHookSate, resetHooxState] = useHooxState()
+  const [hooxState, setHoox, resetHoox] = useHoox()
   const { count } = hooxState
-  return [count * 2, () => setHookSate({ count: count * 2 })]
+  return [count * 2, () => setHoox({ count: count * 2 })]
 }
 ```
 
-### getHooxState
+### getHoox
 
 using this api, build your action
 
 ```javascript
 export const up = () => {
-  const [hooxState, setHooxState, resetHooxState] = getHooxState()
-  return setHooxState({
+  const [hooxState, setHoox, resetHoox] = getHoox()
+  return setHoox({
     count: hooxState.count + 1
   })
 }
 ```
 
-### setHooxState
+### setHoox
 
 it behaves like `setState` of class Components, but no callback
 
 ```javascript
-// get setHooxState from hoox(state)
-const { setHooxState } = hoox({ count: 0 })
+// get setHoox from createHoox(state)
+const { setHoox } = createHoox({ count: 0 })
 export const updateCount = newCount => {
-  return setHooxState({
+  return setHoox({
     count: newCount
   })
 }
 ```
 
 ```javascript
-// get setHooxState from getHooxState()
+// get setHoox from getHoox() or useHoox()
 export const updateWithRecordOld = newCount => {
-  const [oldState, setHooxState] = getHooxState()
-  return setHooxState({
+  const [oldState, setHoox] = getHoox()
+  return setHoox({
     count: newCount,
     oldCount: oldState.count
   })
@@ -154,30 +156,30 @@ export const updateWithRecordOld = newCount => {
 
 ```javascript
 // aonther way to use oldState
-export const up = (key, value) => {
-  const [, setHooxState] = getHooxState()
-  return setHooxState(oldState => ({
+export const up = () => {
+  const [, setHoox] = getHoox()
+  return setHoox(oldState => ({
     count: oldState.count + 1
   }))
 }
 ```
 
-### resetHooxState
+### resetHoox
 
 it behaves like `setState` of `useState` hook
 
 ```javascript
-// get resetHooxState from hoox(state)
-const { resetHooxState } = hoox({ count: 0 })
-export const reset = (key, value) => {
-  return resetHooxState({ count: 0 })
+// get resetHoox from createHoox(state)
+const { resetHoox } = createHoox({ count: 0 })
+export const reset = () => {
+  return resetHoox({ newCount: 0 })
 }
 ```
 
 ```javascript
-// get resetHooxState from getHooxState() or useHooxState()
-export const reset = (key, value) => {
-  const [, , resetHooxState] = getHooxState()
-  return resetHooxState({ count: 0 })
+// get resetHoox from getHoox() or useHoox()
+export const reset = () => {
+  const [, , resetHoox] = getHoox()
+  return resetHoox({ newCount: 0 })
 }
 ```

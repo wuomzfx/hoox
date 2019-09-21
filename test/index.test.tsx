@@ -2,14 +2,14 @@ import * as React from 'react';
 import { cleanup, render, fireEvent } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { act } from 'react-test-renderer';
-import hoox from '../src';
+import createStore from '../src';
 import {
   up,
   asyncUp,
   Provider,
-  setHooxState,
-  resetHooxState,
-  useHooxState,
+  setHoox,
+  resetHoox,
+  useHoox,
   useDoubleCount,
   createContainer,
 } from './stores/counter';
@@ -22,16 +22,16 @@ function Child() {
 }
 
 function Counter() {
-  const [hooxState, setState, resetState] = useHooxState();
+  const [state, setState, resetState] = useHoox();
 
   return (
     <div>
-      <div data-testid="count">{(hooxState as any).count}</div>
+      <div data-testid="count">{state.count}</div>
       <div data-testid="up" onClick={() => up()} />
       <div data-testid="set" onClick={() => setState({ count: 10 })} />
       <div data-testid="reset" onClick={() => resetState({ count: 0 })} />
-      <div data-testid="set2" onClick={() => setHooxState({ count: 20 })} />
-      <div data-testid="reset2" onClick={() => resetHooxState({ count: 0 })} />
+      <div data-testid="set2" onClick={() => setHoox({ count: 20 })} />
+      <div data-testid="reset2" onClick={() => resetHoox({ count: 0 })} />
       <Child />
     </div>
   );
@@ -40,20 +40,20 @@ function Counter() {
 afterEach(cleanup);
 
 describe('init', () => {
-  test('excute hoox error', () => {
-    expect(() => hoox(null)).toThrow();
+  test('excute createStore error', () => {
+    expect(() => createStore(null)).toThrow();
   });
 
   test('createContainer', () => {
     const wrapper = createContainer(RootWrapper);
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
     const [state] = result.current;
     expect(state).toEqual({ count: 1 });
   });
 
   test('createContainer with initialState', () => {
     const wrapper = createContainer(RootWrapper, { count: 2 });
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
     const [state] = result.current;
     expect(state).toEqual({ count: 2 });
   });
@@ -68,17 +68,17 @@ describe('init', () => {
   });
 });
 
-describe('useHooxState', () => {
+describe('useHoox', () => {
   test('get state', () => {
     const wrapper = createContainer(RootWrapper);
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
     const [state] = result.current;
     expect(state).toEqual({ count: 1 });
   });
 
   test('set state', () => {
     const wrapper = createContainer(RootWrapper);
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
     const [, setState] = result.current;
 
     act(() => {
@@ -103,7 +103,7 @@ describe('useSelfHook', () => {
 describe('useActions', () => {
   test('up', () => {
     const wrapper = createContainer(RootWrapper);
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
 
     act(() => {
       up();
@@ -115,7 +115,7 @@ describe('useActions', () => {
 
   test('asyncUp', async () => {
     const wrapper = createContainer(RootWrapper);
-    const { result } = renderHook(() => useHooxState(), { wrapper });
+    const { result } = renderHook(() => useHoox(), { wrapper });
 
     await act(async () => {
       await asyncUp(100);
@@ -144,7 +144,7 @@ describe('child render', () => {
 });
 
 describe('reset state', () => {
-  test('resetState from useHooxState', () => {
+  test('resetState from useHoox', () => {
     const Container = createContainer(Counter);
     const { getByTestId } = render(<Container />);
     fireEvent.click(getByTestId('reset'));

@@ -1,4 +1,4 @@
-import hoox from '../../src';
+import createHoox from '../../src';
 
 function sleep(time: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -9,16 +9,16 @@ const state = {
 };
 
 export const {
-  getHooxState,
-  useHooxState,
-  setHooxState,
-  resetHooxState,
+  getHoox,
+  useHoox,
+  setHoox,
+  resetHoox,
   createContainer,
   Provider,
-} = hoox(state);
+} = createHoox(state);
 
 export const up = () => {
-  const [, setState] = getHooxState();
+  const [, setState] = getHoox();
   return setState(oldState => ({
     count: oldState.count + 1,
   }));
@@ -30,6 +30,6 @@ export const asyncUp = async (time: number) => {
 };
 
 export const useDoubleCount = () => {
-  const [hooxState] = useHooxState();
+  const [hooxState] = useHoox();
   return (hooxState.count || 0) * 2;
 };
