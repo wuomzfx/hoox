@@ -2,12 +2,10 @@ import * as React from 'react';
 import {
   FC,
   useMemo,
-  Dispatch,
   useState,
   ReactNode,
   useContext,
   createContext,
-  SetStateAction,
 } from 'react';
 
 import { isPlainObject } from './utils';
@@ -17,15 +15,22 @@ export interface ProviderProps<State> {
   children: ReactNode
 }
 
-export type Dispatcher<State> = Dispatch<SetStateAction<State>>;
-export type StateOperator<State> = [State, Dispatcher<State>, Dispatcher<State>];
+export type Dispatch<State> = (
+  state: State | ((prevState: State) => State)
+) => void;
 
-export interface Hoox<State> {
+export type Patch<State> = (
+  patch: Partial<State> | ((prevState: State) => Partial<State>)
+) => void;
+
+export type StateOperator<State> = [State, Patch<State>, Dispatch<State>];
+
+export interface Hoox<State extends Object> {
   Provider: (props: ProviderProps<State>) => JSX.Element
   useHoox: () => StateOperator<State>
   getHoox: () => StateOperator<State>
-  setHoox: Dispatcher<State>
-  resetHoox: Dispatcher<State>
+  setHoox: Patch<State>
+  resetHoox: Dispatch<State>
   createContainer: (
     Component: React.FunctionComponent<{}>,
     initialState?: State
@@ -39,8 +44,8 @@ export default function createHoox<State>(state: State): Hoox<State> {
 
   const StateContext = createContext({} as any);
   let stateRef: State;
-  let setHoox: Dispatcher<State>;
-  let resetHoox: Dispatcher<State>;
+  let setHoox: Patch<State>;
+  let resetHoox: Dispatch<State>;
 
   function Provider({ initialState, children }: ProviderProps<State>) {
     const [hooxState, setState] = useState(() => {
@@ -60,21 +65,11 @@ export default function createHoox<State>(state: State): Hoox<State> {
 
     // init setHoox and resetHoox
     useMemo(() => {
-      function combineState(oldState: State, newState: State) {
-        return {
-          ...oldState,
-          ...newState,
-        };
-      }
-      setHoox = newState => {
-        if (typeof newState === 'function') {
-          return setState((oldState: State) => {
-            const newStateResult = (newState as Function)(oldState);
-            return combineState(oldState, newStateResult);
-          });
-        }
-        return setState(oldState => combineState(oldState, newState));
-      };
+      setHoox = patch => setState(prevState => Object.assign(
+        {},
+        prevState,
+        patch instanceof Function ? patch(prevState) : patch,
+      ));
 
       resetHoox = setState;
     }, []);
@@ -117,8 +112,8 @@ export default function createHoox<State>(state: State): Hoox<State> {
     Provider,
     useHoox,
     getHoox,
-    setHoox: (newState: SetStateAction<State>) => getSetState()(newState),
-    resetHoox: (newState: SetStateAction<State>) => getResetState()(newState),
+    setHoox: newState => getSetState()(newState),
+    resetHoox: newState => getResetState()(newState),
     createContainer,
   };
 }
