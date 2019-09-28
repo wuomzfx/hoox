@@ -1,5 +1,10 @@
 # Hoox
 
+[![build](https://travis-ci.org/wuomzfx/hoox.svg)](https://travis-ci.org/wuomzfx/hoox)
+[![test coverage](https://img.shields.io/codecov/c/github/wuomzfx/hoox.svg)](https://codecov.io/gh/wuomzfx/hoox)
+[![downloads](https://img.shields.io/npm/dt/hooxjs.svg)](https://www.npmjs.com/package/hooxjs)
+[![npm version](https://img.shields.io/npm/v/hooxjs.svg)](https://www.npmjs.com/package/hooxjs)
+
 ## Use
 
 ### install
