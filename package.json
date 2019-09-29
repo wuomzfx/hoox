@@ -1,12 +1,17 @@
 {
   "name": "hooxjs",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Functional react state management base on hooks",
   "author": "wuomzfx <75851654@qq.com>",
   "license": "MIT",
   "module": "dist/index.esm.js",
   "main": "dist/index.cjs.js",
   "types": "types/index.d.ts",
+  "files": [
+    "src",
+    "dist",
+    "types"
+  ],
   "scripts": {
     "test": "jest",
     "cov": "jest --coverage",
