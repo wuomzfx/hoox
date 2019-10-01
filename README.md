@@ -188,3 +188,52 @@ export const reset = () => {
   return resetHoox({ newCount: 0 })
 }
 ```
+
+### connect
+
+map hooxState to props.
+
+#### function component
+
+```javascript
+const { connect } = createHoox({ count: 0 })
+
+const Counter = ({ count }) => {
+  return <div>{count}</div>
+}
+
+export default connect(state => ({ count: state.count }))(Counter)
+```
+
+#### class component
+
+```jsx
+// jsx
+import React from 'react'
+
+const { connect } = createHoox({ count: 0 })
+
+@connect(state => ({ count: state.count }))
+export default class Counter extends React.PureComponent {
+  render() {
+    return <div>{this.props.count}</div>
+  }
+}
+```
+
+PS: Decorator syntax of `connect` is not supported in TS.
+
+```tsx
+// tsx
+import React from 'react'
+
+const { connect } = createHoox({ count: 0 })
+
+class Counter extends React.PureComponent<{ count: number }> {
+  render() {
+    return <div>{this.props.count}</div>
+  }
+}
+
+export default connect(state => ({ count: state.count }))(Counter)
+```
