@@ -6,14 +6,14 @@ import {
   ReactNode,
   useContext,
   createContext,
+  ComponentType,
 } from 'react';
 
 import { isPlainObject } from './utils';
 
-export interface ProviderProps<State> {
-  initialState?: State
-  children: ReactNode
-}
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+type GetProps<C> = C extends ComponentType<infer P> ? P : never;
 
 export type Dispatch<State> = (
   state: State | ((prevState: State) => State)
@@ -25,19 +25,7 @@ export type Patch<State> = (
 
 export type StateOperator<State> = [State, Patch<State>, Dispatch<State>];
 
-export interface Hoox<State extends Object> {
-  Provider: (props: ProviderProps<State>) => JSX.Element
-  useHoox: () => StateOperator<State>
-  getHoox: () => StateOperator<State>
-  setHoox: Patch<State>
-  resetHoox: Dispatch<State>
-  createContainer: (
-    Component: React.FunctionComponent<{}>,
-    initialState?: State
-  ) => <Props = {}>(props: Props) => JSX.Element
-}
-
-export default function createHoox<State>(state: State): Hoox<State> {
+export default function createHoox<State>(state: State) {
   if (!isPlainObject(state)) {
     throw new Error('state is not plain object');
   }
@@ -47,7 +35,10 @@ export default function createHoox<State>(state: State): Hoox<State> {
   let setHoox: Patch<State>;
   let resetHoox: Dispatch<State>;
 
-  function Provider({ initialState, children }: ProviderProps<State>) {
+  const Provider: FC<{
+    initialState?: State
+    children: ReactNode
+  }> = function ({ initialState, children }) {
     const [hooxState, setState] = useState(() => {
       if (initialState === undefined) {
         return {
@@ -79,10 +70,13 @@ export default function createHoox<State>(state: State): Hoox<State> {
         {children}
       </StateContext.Provider>
     );
-  }
+  };
 
-  function createContainer(Component: FC, initialState?: State) {
-    return function HookStoreContainer<Props = {}>(props: Props) {
+  function createContainer<Props>(
+    Component: ComponentType<Props>,
+    initialState?: State,
+  ) {
+    return function HookStoreContainer(props: Props) {
       return (
         <Provider initialState={initialState}>
           <Component {...props} />
@@ -108,12 +102,45 @@ export default function createHoox<State>(state: State): Hoox<State> {
     return setHoox;
   }
 
+  function connect<InjectProps = {}>(
+    mapStateToProps: (state: State) => InjectProps,
+  ) {
+    return function connectComponent<C extends ComponentType<GetProps<C>>>(
+      Component: C,
+    ) {
+      type OriginProps = GetProps<C>;
+      type ConnectedComponentProps = Omit<OriginProps, keyof InjectProps>;
+      const ConnectedComponent: FC<ConnectedComponentProps> = function (props) {
+        const [hooxState] = useHoox();
+        const injectProps: InjectProps = useMemo(
+          () => mapStateToProps(hooxState),
+          [hooxState],
+        );
+
+        const allProps = {
+          ...injectProps,
+          ...props,
+        } as OriginProps;
+
+        return <Component {...allProps} />;
+      };
+
+      ConnectedComponent.displayName = `Connect(${Component.name})`;
+
+      return ConnectedComponent;
+    };
+  }
+
+  const safeSetHoox: typeof setHoox = patch => getSetState()(patch);
+  const safeReSetHoox: typeof resetHoox = dispatch => getResetState()(dispatch);
+
   return {
     Provider,
     useHoox,
     getHoox,
-    setHoox: newState => getSetState()(newState),
-    resetHoox: newState => getResetState()(newState),
+    setHoox: safeSetHoox,
+    resetHoox: safeReSetHoox,
+    connect,
     createContainer,
   };
 }

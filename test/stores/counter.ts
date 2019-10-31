@@ -14,6 +14,7 @@ export const {
   setHoox,
   resetHoox,
   createContainer,
+  connect,
   Provider,
 } = createHoox(state);
 

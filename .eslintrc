@@ -14,11 +14,13 @@
     "jsx-a11y/click-events-have-key-events": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "import/no-duplicates": 0
+    "import/no-duplicates": 0,
+    "func-names": 0,
+    "react/prop-types": 0
   },
   "env": {
     "browser": true,
-    "node": true,
+    "node": true
   },
   "overrides": [
     {
