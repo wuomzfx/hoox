@@ -15,11 +15,6 @@ type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type GetProps<C> = C extends ComponentType<infer P> ? P : never;
 
-export interface ProviderProps<State> {
-  initialState?: State
-  children: ReactNode
-}
-
 export type Dispatch<State> = (
   state: State | ((prevState: State) => State)
 ) => void;
